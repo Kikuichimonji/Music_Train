@@ -280,6 +280,32 @@ article#Arpege1 .exo-header h3 {
   content: "🏆 ";
 }
 
+.streak {
+  margin: 0 0 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--mt-text-muted);
+}
+
+.streak::before {
+  content: "🔥 ";
+}
+
+.streak span {
+  color: var(--mt-accent-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.streak-best {
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+.streak-best span {
+  color: var(--mt-text-muted);
+}
+
 .high-score span {
   font-size: 1.2rem;
   color: var(--mt-accent-2);

@@ -92,6 +92,8 @@ let exo1AnswerDown = document.querySelector("#arpegeAnswerDown");
 let exo1RNote = document.querySelector("#Arpege1 #RandomNote");
 let exo1Feedback = document.querySelector("#exo1Feedback");
 let exo1HighScoreEl = document.querySelector("#exo1HighScore");
+let exo1StreakEl = document.querySelector("#exo1Streak");
+let exo1BestStreakEl = document.querySelector("#exo1BestStreak");
 let exo1HistoryEl = document.querySelector("#exo1History");
 let gamme = ["do","ré","mi","fa","sol","la","si"]
 let exo1previousNote = null;
@@ -101,6 +103,8 @@ let exo1AscendingCorrect = false;
 
 const EXO1_BEST_TIME_KEY = "musicTrain_exo1_bestTime";
 const EXO1_HISTORY_KEY = "musicTrain_exo1_history";
+const EXO1_STREAK_KEY = "musicTrain_exo1_streak";
+const EXO1_BEST_STREAK_KEY = "musicTrain_exo1_bestStreak";
 const EXO1_HISTORY_LIMIT = 5;
 
 function loadExo1History() {
@@ -114,6 +118,11 @@ function loadExo1History() {
 function renderExo1HighScore() {
   const bestTime = localStorage.getItem(EXO1_BEST_TIME_KEY);
   exo1HighScoreEl.textContent = bestTime ? formatElapsed(Number(bestTime)) : "—";
+}
+
+function renderExo1Streak() {
+  exo1StreakEl.textContent = localStorage.getItem(EXO1_STREAK_KEY) || "0";
+  exo1BestStreakEl.textContent = localStorage.getItem(EXO1_BEST_STREAK_KEY) || "0";
 }
 
 function renderExo1History() {
@@ -144,11 +153,21 @@ function recordExo1Session(totalMs, isCorrect, note) {
     }
   }
 
+  const currentStreak = isCorrect ? (Number(localStorage.getItem(EXO1_STREAK_KEY)) || 0) + 1 : 0;
+  localStorage.setItem(EXO1_STREAK_KEY, String(currentStreak));
+
+  const bestStreak = Number(localStorage.getItem(EXO1_BEST_STREAK_KEY)) || 0;
+  if (currentStreak > bestStreak) {
+    localStorage.setItem(EXO1_BEST_STREAK_KEY, String(currentStreak));
+  }
+
   renderExo1HighScore();
+  renderExo1Streak();
   renderExo1History();
 }
 
 renderExo1HighScore();
+renderExo1Streak();
 renderExo1History();
 
 for (let i = 0; i < tabs.length; i++) {
