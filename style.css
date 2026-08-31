@@ -943,8 +943,12 @@ h2 {
 .app-header h1 {
   user-select: none;
   -webkit-user-select: none;
+  /* Distinct de user-select : c'est cette propriété qui bloque le menu iOS
+     (« Rechercher », dictionnaire) déclenché par un appui prolongé. */
+  -webkit-touch-callout: none;
   touch-action: manipulation;
   cursor: default;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .title-nudge {

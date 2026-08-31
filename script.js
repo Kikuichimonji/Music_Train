@@ -1262,7 +1262,10 @@ function resetTitleTaps() {
   appTitle.classList.remove("title-nudge");
 }
 
-appTitle.addEventListener("click", () => {
+// pointerdown plutôt que click : il part dès le contact, avant que le navigateur
+// n'enclenche sélection ou menu contextuel, et preventDefault coupe court à ceux-ci.
+appTitle.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
   titleTaps++;
 
   clearTimeout(titleTapTimer);
