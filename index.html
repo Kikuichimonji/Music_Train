@@ -19,7 +19,7 @@
     <section id="exercise-selector" class="info-box">
       <ul>
         <li><a href="#" class="active">Tierce montante / descendante</a></li>
-        <li><a href="#">Onglet 2</a></li>
+        <li><a href="#">Trouve la touche</a></li>
         <li><a href="#">Onglet 3</a></li>
       </ul>
       <div class="panels">
@@ -29,7 +29,7 @@
             <label id="TimerArpege" class="timer">0.00s</label>
           </div>
 
-          <p id="RandomNote">#</p>
+          <p id="RandomNote" class="note-prompt">#</p>
 
           <button class="start-btn">Commencer</button>
 
@@ -46,12 +46,50 @@
             <ul id="exo1History" class="history-list"></ul>
           </div>
         </article>
-        <article>
-          <h2>Rien</h2>
+        <article id="Exo2">
+          <div class="exo-header">
+            <h3>Trouve la bonne touche</h3>
+            <label id="Exo2Timer" class="timer">0.00s</label>
+          </div>
 
-          <p>
-            Cet onglet EST VIDE
-          </p>
+          <p id="exo2Prompt" class="note-prompt">#</p>
+
+          <div class="exo2-options">
+            <label><input type="checkbox" id="exo2SoundToggle"> Jouer le son</label>
+            <label><input type="checkbox" id="exo2HardMode"> Mode difficile (son seul)</label>
+          </div>
+
+          <div class="exo2-controls">
+            <button class="start-btn" id="exo2Button">Commencer</button>
+            <button type="button" id="exo2Replay" class="replay-btn" title="Réécouter la note">🔊</button>
+          </div>
+
+          <div class="piano" id="exo2Piano">
+            <button type="button" class="piano-key" data-note="do"></button>
+            <button type="button" class="piano-key" data-note="ré"></button>
+            <button type="button" class="piano-key" data-note="mi"></button>
+            <button type="button" class="piano-key" data-note="fa"></button>
+            <button type="button" class="piano-key" data-note="sol"></button>
+            <button type="button" class="piano-key" data-note="la"></button>
+            <button type="button" class="piano-key" data-note="si"></button>
+
+            <!-- Touches noires décoratives : la gamme travaillée n'utilise que les blanches -->
+            <div class="piano-blacks" aria-hidden="true">
+              <span class="piano-black"></span>
+              <span class="piano-black"></span>
+              <span class="piano-black"></span>
+              <span class="piano-black"></span>
+              <span class="piano-black"></span>
+            </div>
+          </div>
+
+          <p id="exo2Feedback" class="feedback" aria-live="polite"></p>
+
+          <div class="exo-stats">
+            <p class="high-score">Meilleur temps : <span id="exo2HighScore">—</span></p>
+            <p class="streak">Série : <span id="exo2Streak">0</span> <span class="streak-best">(record : <span id="exo2BestStreak">0</span>)</span></p>
+            <ul id="exo2History" class="history-list"></ul>
+          </div>
         </article>
         <article>
           <h2>Rien</h2>

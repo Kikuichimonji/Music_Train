@@ -101,74 +101,204 @@ let exo1actualNote= null
 let exo1SplitTime = 0;
 let exo1AscendingCorrect = false;
 
-const EXO1_BEST_TIME_KEY = "musicTrain_exo1_bestTime";
-const EXO1_HISTORY_KEY = "musicTrain_exo1_history";
-const EXO1_STREAK_KEY = "musicTrain_exo1_streak";
-const EXO1_BEST_STREAK_KEY = "musicTrain_exo1_bestStreak";
-const EXO1_HISTORY_LIMIT = 5;
+let exo2Button = document.querySelector("#exo2Button");
+let exo2Timer = document.querySelector("#Exo2Timer");
+let exo2Prompt = document.querySelector("#exo2Prompt");
+let exo2SoundToggle = document.querySelector("#exo2SoundToggle");
+let exo2HardMode = document.querySelector("#exo2HardMode");
+let exo2Replay = document.querySelector("#exo2Replay");
+let exo2Keys = document.querySelectorAll("#exo2Piano .piano-key");
+let exo2Feedback = document.querySelector("#exo2Feedback");
+let exo2HighScoreEl = document.querySelector("#exo2HighScore");
+let exo2StreakEl = document.querySelector("#exo2Streak");
+let exo2BestStreakEl = document.querySelector("#exo2BestStreak");
+let exo2HistoryEl = document.querySelector("#exo2History");
 
-function loadExo1History() {
-  try {
-    return JSON.parse(localStorage.getItem(EXO1_HISTORY_KEY)) || [];
-  } catch {
-    return [];
-  }
-}
+let exo2Interval = null;
+let exo2StartTime = 0;
+let exo2CurrentNote = null;
 
-function renderExo1HighScore() {
-  const bestTime = localStorage.getItem(EXO1_BEST_TIME_KEY);
-  exo1HighScoreEl.textContent = bestTime ? formatElapsed(Number(bestTime)) : "—";
-}
+const EXO_HISTORY_LIMIT = 5;
 
-function renderExo1Streak() {
-  exo1StreakEl.textContent = localStorage.getItem(EXO1_STREAK_KEY) || "0";
-  exo1BestStreakEl.textContent = localStorage.getItem(EXO1_BEST_STREAK_KEY) || "0";
-}
+function createStatsTracker(prefix, els) {
+  const KEYS = {
+    best: `musicTrain_${prefix}_bestTime`,
+    history: `musicTrain_${prefix}_history`,
+    streak: `musicTrain_${prefix}_streak`,
+    bestStreak: `musicTrain_${prefix}_bestStreak`,
+  };
 
-function renderExo1History() {
-  const history = loadExo1History();
-
-  exo1HistoryEl.innerHTML = history.map(entry => `
-    <li class="history-item ${entry.correct ? "correct" : "incorrect"}">
-      <span>${entry.time} · ${entry.note}</span>
-      <span class="history-time">${entry.correct ? formatElapsed(entry.totalMs) : "Faux"}</span>
-    </li>
-  `).join("");
-}
-
-function recordExo1Session(totalMs, isCorrect, note) {
-  const history = loadExo1History();
-  history.unshift({
-    totalMs,
-    correct: isCorrect,
-    note: note.charAt(0).toUpperCase() + note.slice(1),
-    time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-  });
-  localStorage.setItem(EXO1_HISTORY_KEY, JSON.stringify(history.slice(0, EXO1_HISTORY_LIMIT)));
-
-  if (isCorrect) {
-    const bestTime = Number(localStorage.getItem(EXO1_BEST_TIME_KEY));
-    if (!bestTime || totalMs < bestTime) {
-      localStorage.setItem(EXO1_BEST_TIME_KEY, String(totalMs));
+  function loadHistory() {
+    try {
+      return JSON.parse(localStorage.getItem(KEYS.history)) || [];
+    } catch {
+      return [];
     }
   }
 
-  const currentStreak = isCorrect ? (Number(localStorage.getItem(EXO1_STREAK_KEY)) || 0) + 1 : 0;
-  localStorage.setItem(EXO1_STREAK_KEY, String(currentStreak));
+  function renderAll() {
+    const bestTime = localStorage.getItem(KEYS.best);
+    els.highScore.textContent = bestTime ? formatElapsed(Number(bestTime)) : "—";
 
-  const bestStreak = Number(localStorage.getItem(EXO1_BEST_STREAK_KEY)) || 0;
-  if (currentStreak > bestStreak) {
-    localStorage.setItem(EXO1_BEST_STREAK_KEY, String(currentStreak));
+    els.streak.textContent = localStorage.getItem(KEYS.streak) || "0";
+    els.bestStreak.textContent = localStorage.getItem(KEYS.bestStreak) || "0";
+
+    els.history.innerHTML = loadHistory().map(entry => `
+      <li class="history-item ${entry.correct ? "correct" : "incorrect"}">
+        <span>${entry.time} · ${entry.note}</span>
+        <span class="history-time">${entry.correct ? formatElapsed(entry.totalMs) : "Faux"}</span>
+      </li>
+    `).join("");
   }
 
-  renderExo1HighScore();
-  renderExo1Streak();
-  renderExo1History();
+  function record(totalMs, isCorrect, note) {
+    const history = loadHistory();
+    history.unshift({
+      totalMs,
+      correct: isCorrect,
+      note: note.charAt(0).toUpperCase() + note.slice(1),
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    });
+    localStorage.setItem(KEYS.history, JSON.stringify(history.slice(0, EXO_HISTORY_LIMIT)));
+
+    if (isCorrect) {
+      const bestTime = Number(localStorage.getItem(KEYS.best));
+      if (!bestTime || totalMs < bestTime) {
+        localStorage.setItem(KEYS.best, String(totalMs));
+      }
+    }
+
+    const currentStreak = isCorrect ? (Number(localStorage.getItem(KEYS.streak)) || 0) + 1 : 0;
+    localStorage.setItem(KEYS.streak, String(currentStreak));
+
+    const bestStreak = Number(localStorage.getItem(KEYS.bestStreak)) || 0;
+    if (currentStreak > bestStreak) {
+      localStorage.setItem(KEYS.bestStreak, String(currentStreak));
+    }
+
+    renderAll();
+  }
+
+  renderAll();
+
+  return { record };
 }
 
-renderExo1HighScore();
-renderExo1Streak();
-renderExo1History();
+const exo1Stats = createStatsTracker("exo1", {
+  highScore: exo1HighScoreEl,
+  streak: exo1StreakEl,
+  bestStreak: exo1BestStreakEl,
+  history: exo1HistoryEl,
+});
+
+const exo2Stats = createStatsTracker("exo2", {
+  highScore: exo2HighScoreEl,
+  streak: exo2StreakEl,
+  bestStreak: exo2BestStreakEl,
+  history: exo2HistoryEl,
+});
+
+const NOTE_FREQUENCIES = {
+  do: 261.63,
+  "ré": 293.66,
+  mi: 329.63,
+  fa: 349.23,
+  sol: 392.00,
+  la: 440.00,
+  si: 493.88,
+};
+
+let audioCtx = null;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  // Les navigateurs suspendent le contexte tant qu'il n'y a pas eu de geste utilisateur
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+// Partiels harmoniques d'une corde frappée : les aigus s'éteignent bien plus vite
+// que le fondamental, c'est ce qui distingue un piano d'un simple bip sinusoïdal.
+const PIANO_INHARMONICITY = 0.0001;
+
+const PIANO_PARTIALS = [
+  { ratio: 1, gain: 1.00, decay: 1.00 },
+  { ratio: 2, gain: 0.42, decay: 0.70 },
+  { ratio: 3, gain: 0.22, decay: 0.52 },
+  { ratio: 4, gain: 0.12, decay: 0.40 },
+  { ratio: 5, gain: 0.07, decay: 0.30 },
+  { ratio: 6, gain: 0.04, decay: 0.24 },
+];
+
+function playNote(note) {
+  const ctx = getAudioContext();
+  const freq = NOTE_FREQUENCIES[note];
+  const now = ctx.currentTime;
+  const duration = 2.2;
+
+  const master = ctx.createGain();
+  master.gain.value = 0.5;
+  master.connect(ctx.destination);
+
+  // Le timbre s'assombrit en s'éteignant, comme la résonance d'une vraie corde
+  const filter = ctx.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(5500, now);
+  filter.frequency.exponentialRampToValueAtTime(1100, now + duration);
+  filter.connect(master);
+
+  PIANO_PARTIALS.forEach(partial => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "sine";
+    // Inharmonicité d'une corde tendue : f(n) = n·f0·√(1 + B·n²).
+    // B doit rester petit (~1e-4 dans le médium d'un piano) : au-delà, les partiels
+    // aigus tirent la hauteur perçue vers l'aigu et un accordeur détecte la note trop haute.
+    const n = partial.ratio;
+    osc.frequency.value = freq * n * Math.sqrt(1 + PIANO_INHARMONICITY * n * n);
+
+    const peak = partial.gain * 0.3;
+    const end = now + duration * partial.decay;
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(peak, now + 0.006);        // attaque percussive
+    gain.gain.exponentialRampToValueAtTime(peak * 0.3, now + 0.12);   // chute initiale rapide
+    gain.gain.exponentialRampToValueAtTime(0.0001, end);              // longue résonance
+
+    osc.connect(gain);
+    gain.connect(filter);
+    osc.start(now);
+    osc.stop(end);
+  });
+
+  // Bruit très bref à l'attaque : le "clac" du marteau sur la corde
+  const noiseBuffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.03), ctx.sampleRate);
+  const noiseData = noiseBuffer.getChannelData(0);
+  for (let i = 0; i < noiseData.length; i++) {
+    noiseData[i] = (Math.random() * 2 - 1) * (1 - i / noiseData.length);
+  }
+
+  const noise = ctx.createBufferSource();
+  noise.buffer = noiseBuffer;
+
+  const noiseFilter = ctx.createBiquadFilter();
+  noiseFilter.type = "bandpass";
+  noiseFilter.frequency.value = freq * 3;
+
+  const noiseGain = ctx.createGain();
+  noiseGain.gain.setValueAtTime(0.05, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
+
+  noise.connect(noiseFilter);
+  noiseFilter.connect(noiseGain);
+  noiseGain.connect(master);
+  noise.start(now);
+}
 
 for (let i = 0; i < tabs.length; i++) {
   let tab = tabs[i];
@@ -231,11 +361,11 @@ exo1Button.addEventListener("click", () => {
 });
 
 document.addEventListener("keydown", (e) => {
-  if (e.key !== "Enter") return;
-  if (e.target === exo1AnswerUp || e.target === exo1AnswerDown) return;
-  if (!document.getElementById("Arpege1").classList.contains("active-panel")) return;
+  if (e.key !== "Enter" || e.target.tagName === "INPUT") return;
 
-  exo1Button.click();
+  const activePanel = document.querySelector(".panels .active-panel");
+  const startBtn = activePanel && activePanel.querySelector(".start-btn");
+  if (startBtn) startBtn.click();
 });
 
 exo1AnswerUp.addEventListener("keydown", (e) => {
@@ -274,7 +404,80 @@ exo1AnswerDown.addEventListener("keydown", (e) => {
     : `Faux, la réponse était : ${answerWanted.ascending.join(" ")} / ${answerWanted.descending.join(" ")}`;
   exo1Feedback.className = `feedback show ${isCorrect ? "correct" : "incorrect"}`;
 
-  recordExo1Session(totalTime, isCorrect, exo1RNote.innerHTML);
+  exo1Stats.record(totalTime, isCorrect, exo1RNote.innerHTML);
 
   exo1AnswerDown.blur();
+});
+
+exo2HardMode.addEventListener("change", () => {
+  exo2SoundToggle.disabled = exo2HardMode.checked;
+  if (exo2HardMode.checked) {
+    exo2SoundToggle.checked = true;
+  }
+});
+
+exo2Button.addEventListener("click", () => {
+  if (exo2Interval !== null) {
+    clearInterval(exo2Interval);
+  }
+
+  exo2StartTime = performance.now();
+  exo2Timer.innerHTML = formatElapsed(0);
+  exo2Interval = setInterval(() => {
+    exo2Timer.innerHTML = formatElapsed(performance.now() - exo2StartTime);
+  }, 10);
+
+  exo2CurrentNote = getNote(exo2CurrentNote);
+
+  exo2Keys.forEach(key => {
+    key.className = "piano-key";
+    key.disabled = false;
+  });
+  exo2Feedback.className = "feedback";
+  exo2Feedback.textContent = "";
+
+  const isHard = exo2HardMode.checked;
+  exo2Prompt.textContent = isHard
+    ? "🔊"
+    : exo2CurrentNote.charAt(0).toUpperCase() + exo2CurrentNote.slice(1);
+
+  if (isHard || exo2SoundToggle.checked) {
+    playNote(exo2CurrentNote);
+  }
+});
+
+exo2Replay.addEventListener("click", () => {
+  if (exo2CurrentNote) playNote(exo2CurrentNote);
+});
+
+exo2Keys.forEach(key => {
+  key.addEventListener("click", () => {
+    if (exo2Interval === null) return;
+
+    clearInterval(exo2Interval);
+    exo2Interval = null;
+
+    const isCorrect = key.dataset.note === exo2CurrentNote;
+
+    exo2Keys.forEach(k => { k.disabled = true; });
+    key.classList.add(isCorrect ? "correct" : "incorrect");
+
+    if (!isCorrect) {
+      const correctKey = Array.from(exo2Keys).find(k => k.dataset.note === exo2CurrentNote);
+      if (correctKey) correctKey.classList.add("correct");
+    }
+
+    const totalTime = performance.now() - exo2StartTime;
+    const displayNote = exo2CurrentNote.charAt(0).toUpperCase() + exo2CurrentNote.slice(1);
+
+    exo2Prompt.textContent = displayNote;
+    exo2Feedback.textContent = isCorrect
+      ? `Correct ! (${formatElapsed(totalTime)})`
+      : `Faux, c'était : ${displayNote}`;
+    exo2Feedback.className = `feedback show ${isCorrect ? "correct" : "incorrect"}`;
+
+    exo2Stats.record(totalTime, isCorrect, exo2CurrentNote);
+
+    key.blur();
+  });
 });

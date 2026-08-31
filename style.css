@@ -101,15 +101,17 @@ h2 {
 }
 
 .info-box li {
-  float: none;
   list-style-type: none;
   flex: 1;
+  display: flex;
 }
 
 .info-box li a {
-  display: block;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
-  width: 100%;
   padding: 0.6rem 1rem;
   line-height: 1.2;
   border-radius: 999px;
@@ -152,9 +154,9 @@ h2 {
   display: block;
 }
 
-/* ---------- Exercice Arpège ---------- */
+/* ---------- En-tête d'exercice (commun) ---------- */
 
-article#Arpege1 .exo-header {
+.exo-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -162,7 +164,7 @@ article#Arpege1 .exo-header {
   flex-wrap: wrap;
 }
 
-article#Arpege1 .exo-header h3 {
+.exo-header h3 {
   margin: 0;
   font-size: 1.05rem;
 }
@@ -178,7 +180,7 @@ article#Arpege1 .exo-header h3 {
   color: var(--mt-accent-2);
 }
 
-#RandomNote {
+.note-prompt {
   text-align: center;
   margin: 1.5rem auto;
   font-size: 4rem;
@@ -221,8 +223,9 @@ article#Arpege1 .exo-header h3 {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--mt-error) 20%, transparent);
 }
 
-.info-box button {
+.start-btn {
   display: block;
+  margin: 0 auto 1.5rem;
   white-space: nowrap;
   background: linear-gradient(120deg, var(--mt-accent), #6f4bff);
   border: none;
@@ -230,11 +233,7 @@ article#Arpege1 .exo-header h3 {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.start-btn {
-  margin: 0 auto 1.5rem;
-}
-
-.info-box button:hover {
+.start-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 10px 20px -10px var(--mt-accent);
 }
@@ -371,3 +370,130 @@ article#Arpege1 .exo-header h3 {
 .history-item.incorrect .history-time {
   color: var(--mt-error);
 }
+
+/* ---------- Exercice "Trouve la touche" ---------- */
+
+.exo2-options {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 0 0 1.25rem;
+  flex-wrap: wrap;
+}
+
+.exo2-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--mt-text-muted);
+}
+
+/* Grille 3 colonnes : "Commencer" reste centré sur le panneau,
+   le bouton replay se pose à sa droite sans le décaler. */
+.exo2-controls {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.exo2-controls .start-btn {
+  grid-column: 2;
+  margin: 0;
+}
+
+.replay-btn {
+  grid-column: 3;
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0; /* Pico ajoute une marge basse aux boutons, qui décentrerait la grille */
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--mt-border);
+  background: var(--mt-surface-2);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.replay-btn:hover {
+  border-color: var(--mt-accent);
+  transform: translateY(-1px);
+}
+
+.piano {
+  position: relative;
+  display: flex;
+  margin: 0 0 1.5rem;
+  border-radius: 0 0 0.7rem 0.7rem;
+  overflow: hidden;
+  box-shadow: 0 12px 24px -14px rgba(0, 0, 0, 0.8);
+}
+
+.piano-key {
+  flex: 1;
+  height: 150px;
+  border: none;
+  border-right: 1px solid #c2c2d0;
+  border-radius: 0;
+  background: linear-gradient(180deg, #fafafd 70%, #e4e4ec);
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.piano-key:last-of-type {
+  border-right: none;
+}
+
+.piano-key:hover:not(:disabled) {
+  background: linear-gradient(180deg, #ecebf6 70%, #d6d5e4);
+}
+
+.piano-key:active:not(:disabled) {
+  background: linear-gradient(180deg, #dddcec 70%, #c7c6da);
+}
+
+.piano-key:disabled {
+  cursor: default;
+}
+
+.piano-key.correct {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--mt-success) 45%, white), var(--mt-success));
+}
+
+.piano-key.incorrect {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--mt-error) 45%, white), var(--mt-error));
+}
+
+/* Touches noires : purement décoratives, elles absorbent le clic
+   pour ne pas déclencher la blanche située dessous. */
+.piano-blacks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.piano-black {
+  position: absolute;
+  top: 0;
+  width: 8.6%;
+  height: 62%;
+  border-radius: 0 0 0.3rem 0.3rem;
+  background: linear-gradient(180deg, #33323f 75%, #16151d);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.55);
+  pointer-events: auto;
+  cursor: default;
+}
+
+.piano-black:nth-child(1) { left: 9.99%; }
+.piano-black:nth-child(2) { left: 24.27%; }
+.piano-black:nth-child(3) { left: 52.84%; }
+.piano-black:nth-child(4) { left: 67.13%; }
+.piano-black:nth-child(5) { left: 81.41%; }
