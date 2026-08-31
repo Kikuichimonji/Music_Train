@@ -452,16 +452,12 @@ h2 {
   border-right: none;
 }
 
-.piano-key:hover:not(:disabled) {
+.piano-key:hover {
   background: linear-gradient(180deg, #ecebf6 70%, #d6d5e4);
 }
 
-.piano-key:active:not(:disabled) {
+.piano-key:active {
   background: linear-gradient(180deg, #dddcec 70%, #c7c6da);
-}
-
-.piano-key:disabled {
-  cursor: default;
 }
 
 .piano-key.correct {
@@ -472,8 +468,8 @@ h2 {
   background: linear-gradient(180deg, color-mix(in srgb, var(--mt-error) 45%, white), var(--mt-error));
 }
 
-/* Touches noires : purement décoratives, elles absorbent le clic
-   pour ne pas déclencher la blanche située dessous. */
+/* Le calque laisse passer les clics dans ses interstices vers les blanches,
+   seules les touches noires elles-mêmes les captent. */
 .piano-blacks {
   position: absolute;
   inset: 0;
@@ -485,11 +481,38 @@ h2 {
   top: 0;
   width: 8.6%;
   height: 62%;
+  margin: 0;
+  padding: 0;
+  border: none;
   border-radius: 0 0 0.3rem 0.3rem;
   background: linear-gradient(180deg, #33323f 75%, #16151d);
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.55);
   pointer-events: auto;
-  cursor: default;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.piano-black:hover {
+  background: linear-gradient(180deg, #45444f 75%, #24232d);
+}
+
+.piano-black:active {
+  background: linear-gradient(180deg, #24232d 75%, #101017);
+}
+
+.piano-black.correct {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--mt-success) 70%, black), color-mix(in srgb, var(--mt-success) 40%, black));
+}
+
+.piano-black.incorrect {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--mt-error) 70%, black), color-mix(in srgb, var(--mt-error) 40%, black));
+}
+
+.piano-hint {
+  margin: -0.75rem 0 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--mt-text-muted);
 }
 
 .piano-black:nth-child(1) { left: 9.99%; }

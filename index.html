@@ -57,6 +57,7 @@
           <div class="exo2-options">
             <label><input type="checkbox" id="exo2SoundToggle"> Jouer le son</label>
             <label><input type="checkbox" id="exo2HardMode"> Mode difficile (son seul)</label>
+            <label><input type="checkbox" id="exo2Accidentals"> Inclure les altérations</label>
           </div>
 
           <div class="exo2-controls">
@@ -73,15 +74,16 @@
             <button type="button" class="piano-key" data-note="la"></button>
             <button type="button" class="piano-key" data-note="si"></button>
 
-            <!-- Touches noires décoratives : la gamme travaillée n'utilise que les blanches -->
-            <div class="piano-blacks" aria-hidden="true">
-              <span class="piano-black"></span>
-              <span class="piano-black"></span>
-              <span class="piano-black"></span>
-              <span class="piano-black"></span>
-              <span class="piano-black"></span>
+            <div class="piano-blacks">
+              <button type="button" class="piano-black" data-note="do#"></button>
+              <button type="button" class="piano-black" data-note="ré#"></button>
+              <button type="button" class="piano-black" data-note="fa#"></button>
+              <button type="button" class="piano-black" data-note="sol#"></button>
+              <button type="button" class="piano-black" data-note="la#"></button>
             </div>
           </div>
+
+          <p class="piano-hint">Hors partie, clique les touches pour jouer librement.</p>
 
           <p id="exo2Feedback" class="feedback" aria-live="polite"></p>
 

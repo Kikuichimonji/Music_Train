@@ -44,10 +44,51 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-function getNote(Note) {
-  newNote = gamme[getRandomInt(7)];
+function getNote(previousNote) {
+  const newNote = gamme[getRandomInt(gamme.length)];
 
-  return newNote == Note ? getNote(Note) : newNote; 
+  return newNote === previousNote ? getNote(previousNote) : newNote;
+}
+
+// Les altérations ne concernent que l'exercice au clavier : l'exercice de tierce
+// raisonne en degrés de la gamme (±2 index), pas en demi-tons.
+const gammeChromatique = [
+  "do", "do#", "ré", "ré#", "mi", "fa", "fa#", "sol", "sol#", "la", "la#", "si",
+];
+
+// Deuxième nom possible d'une touche. Les noires ont leur couple dièse/bémol ;
+// mi-fa et si-do n'étant séparés que d'un demi-ton, quatre touches blanches
+// portent elles aussi un nom altéré (Fa♭ = Mi, Mi♯ = Fa, Do♭ = Si, Si♯ = Do).
+// Ré, Sol et La n'en ont pas — il faudrait des doubles altérations.
+const ENHARMONIC_NAMES = {
+  "do": ["Do", "Si♯"],
+  "do#": ["Do♯", "Ré♭"],
+  "ré#": ["Ré♯", "Mi♭"],
+  "mi": ["Mi", "Fa♭"],
+  "fa": ["Fa", "Mi♯"],
+  "fa#": ["Fa♯", "Sol♭"],
+  "sol#": ["Sol♯", "La♭"],
+  "la#": ["La♯", "Si♭"],
+  "si": ["Si", "Do♭"],
+};
+
+function noteLabel(note) {
+  return note.endsWith("#")
+    ? note.charAt(0).toUpperCase() + note.slice(1, -1) + "♯"
+    : note.charAt(0).toUpperCase() + note.slice(1);
+}
+
+// Tire une touche (équiprobable sur les 12 ou les 7), puis choisit au hasard
+// l'une de ses graphies quand elle en a deux.
+function drawExo2Prompt(withAccidentals, previousKey) {
+  const keys = withAccidentals ? gammeChromatique : gamme;
+  const key = keys[getRandomInt(keys.length)];
+
+  if (key === previousKey) return drawExo2Prompt(withAccidentals, previousKey);
+
+  // Sans les altérations, une blanche garde toujours son nom simple
+  const names = withAccidentals ? ENHARMONIC_NAMES[key] : null;
+  return { key, label: names ? names[getRandomInt(names.length)] : noteLabel(key) };
 }
 
 function normalizeNote(str) {
@@ -107,7 +148,8 @@ let exo2Prompt = document.querySelector("#exo2Prompt");
 let exo2SoundToggle = document.querySelector("#exo2SoundToggle");
 let exo2HardMode = document.querySelector("#exo2HardMode");
 let exo2Replay = document.querySelector("#exo2Replay");
-let exo2Keys = document.querySelectorAll("#exo2Piano .piano-key");
+let exo2Accidentals = document.querySelector("#exo2Accidentals");
+let exo2Keys = document.querySelectorAll("#exo2Piano .piano-key, #exo2Piano .piano-black");
 let exo2Feedback = document.querySelector("#exo2Feedback");
 let exo2HighScoreEl = document.querySelector("#exo2HighScore");
 let exo2StreakEl = document.querySelector("#exo2Streak");
@@ -116,7 +158,8 @@ let exo2HistoryEl = document.querySelector("#exo2History");
 
 let exo2Interval = null;
 let exo2StartTime = 0;
-let exo2CurrentNote = null;
+let exo2CurrentNote = null;  // la touche attendue
+let exo2CurrentLabel = "";   // le nom sous lequel elle a été demandée
 
 const EXO_HISTORY_LIMIT = 5;
 
@@ -156,7 +199,7 @@ function createStatsTracker(prefix, els) {
     history.unshift({
       totalMs,
       correct: isCorrect,
-      note: note.charAt(0).toUpperCase() + note.slice(1),
+      note, // déjà mis en forme par l'appelant
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     });
     localStorage.setItem(KEYS.history, JSON.stringify(history.slice(0, EXO_HISTORY_LIMIT)));
@@ -200,11 +243,16 @@ const exo2Stats = createStatsTracker("exo2", {
 
 const NOTE_FREQUENCIES = {
   do: 261.63,
+  "do#": 277.18,
   "ré": 293.66,
+  "ré#": 311.13,
   mi: 329.63,
   fa: 349.23,
+  "fa#": 369.99,
   sol: 392.00,
+  "sol#": 415.30,
   la: 440.00,
+  "la#": 466.16,
   si: 493.88,
 };
 
@@ -404,7 +452,7 @@ exo1AnswerDown.addEventListener("keydown", (e) => {
     : `Faux, la réponse était : ${answerWanted.ascending.join(" ")} / ${answerWanted.descending.join(" ")}`;
   exo1Feedback.className = `feedback show ${isCorrect ? "correct" : "incorrect"}`;
 
-  exo1Stats.record(totalTime, isCorrect, exo1RNote.innerHTML);
+  exo1Stats.record(totalTime, isCorrect, noteLabel(exo1RNote.innerHTML));
 
   exo1AnswerDown.blur();
 });
@@ -427,19 +475,17 @@ exo2Button.addEventListener("click", () => {
     exo2Timer.innerHTML = formatElapsed(performance.now() - exo2StartTime);
   }, 10);
 
-  exo2CurrentNote = getNote(exo2CurrentNote);
+  const prompt = drawExo2Prompt(exo2Accidentals.checked, exo2CurrentNote);
+  exo2CurrentNote = prompt.key;
+  exo2CurrentLabel = prompt.label;
 
-  exo2Keys.forEach(key => {
-    key.className = "piano-key";
-    key.disabled = false;
-  });
+  // classList plutôt que className : les touches noires ont leur propre classe de base
+  exo2Keys.forEach(key => key.classList.remove("correct", "incorrect"));
   exo2Feedback.className = "feedback";
   exo2Feedback.textContent = "";
 
   const isHard = exo2HardMode.checked;
-  exo2Prompt.textContent = isHard
-    ? "🔊"
-    : exo2CurrentNote.charAt(0).toUpperCase() + exo2CurrentNote.slice(1);
+  exo2Prompt.textContent = isHard ? "🔊" : exo2CurrentLabel;
 
   if (isHard || exo2SoundToggle.checked) {
     playNote(exo2CurrentNote);
@@ -452,6 +498,9 @@ exo2Replay.addEventListener("click", () => {
 
 exo2Keys.forEach(key => {
   key.addEventListener("click", () => {
+    // Le clavier sonne toujours : hors partie, c'est un mode libre.
+    playNote(key.dataset.note);
+
     if (exo2Interval === null) return;
 
     clearInterval(exo2Interval);
@@ -459,7 +508,6 @@ exo2Keys.forEach(key => {
 
     const isCorrect = key.dataset.note === exo2CurrentNote;
 
-    exo2Keys.forEach(k => { k.disabled = true; });
     key.classList.add(isCorrect ? "correct" : "incorrect");
 
     if (!isCorrect) {
@@ -468,15 +516,16 @@ exo2Keys.forEach(key => {
     }
 
     const totalTime = performance.now() - exo2StartTime;
-    const displayNote = exo2CurrentNote.charAt(0).toUpperCase() + exo2CurrentNote.slice(1);
 
-    exo2Prompt.textContent = displayNote;
+    // La réponse est révélée dans tous les cas, y compris en mode difficile
+    exo2Prompt.textContent = exo2CurrentLabel;
+
     exo2Feedback.textContent = isCorrect
       ? `Correct ! (${formatElapsed(totalTime)})`
-      : `Faux, c'était : ${displayNote}`;
+      : `Faux, c'était : ${exo2CurrentLabel}`;
     exo2Feedback.className = `feedback show ${isCorrect ? "correct" : "incorrect"}`;
 
-    exo2Stats.record(totalTime, isCorrect, exo2CurrentNote);
+    exo2Stats.record(totalTime, isCorrect, exo2CurrentLabel);
 
     key.blur();
   });
