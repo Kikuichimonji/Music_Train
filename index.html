@@ -20,7 +20,7 @@
       <ul>
         <li><a href="#" class="active">Tierce montante / descendante</a></li>
         <li><a href="#">Trouve la touche</a></li>
-        <li><a href="#">Onglet 3</a></li>
+        <li><a href="#">Oreille relative</a></li>
       </ul>
       <div class="panels">
         <article class="active-panel" id="Arpege1">
@@ -54,13 +54,13 @@
 
           <p id="exo2Prompt" class="note-prompt">#</p>
 
-          <div class="exo2-options">
-            <label><input type="checkbox" id="exo2SoundToggle"> Jouer le son</label>
-            <label><input type="checkbox" id="exo2HardMode"> Mode difficile (son seul)</label>
-            <label><input type="checkbox" id="exo2Accidentals"> Inclure les altérations</label>
+          <div class="exo-options">
+            <label class="opt-pill"><input type="checkbox" id="exo2SoundToggle"><span>Jouer le son</span></label>
+            <label class="opt-pill"><input type="checkbox" id="exo2HardMode"><span>Mode difficile</span></label>
+            <label class="opt-pill"><input type="checkbox" id="exo2Accidentals"><span>Altérations</span></label>
           </div>
 
-          <div class="exo2-controls">
+          <div class="exo-controls">
             <button class="start-btn" id="exo2Button">Commencer</button>
             <button type="button" id="exo2Replay" class="replay-btn" title="Réécouter la note">🔊</button>
           </div>
@@ -93,12 +93,49 @@
             <ul id="exo2History" class="history-list"></ul>
           </div>
         </article>
-        <article>
-          <h2>Rien</h2>
+        <article id="Exo3">
+          <div class="exo-header">
+            <h3>Retrouve la 2e note à l'oreille</h3>
+            <label id="Exo3Timer" class="timer">0.00s</label>
+          </div>
 
-          <p>
-            C'est onglet esu AUSSI VIDE
-          </p>
+          <p id="exo3Prompt" class="note-prompt">#</p>
+
+          <div class="exo-options">
+            <label class="opt-pill"><input type="checkbox" id="exo3Descending"><span>Sens descendant</span></label>
+          </div>
+
+          <div class="range-row">
+            <label for="exo3Range">Écart max</label>
+            <!-- max piloté par script.js, pour rester aligné sur EXO3_SANE_MAX -->
+            <input type="range" id="exo3Range" min="1" value="5">
+            <span class="range-readout">
+              <output id="exo3RangeValue">5</output>
+              <span class="range-unit">demi-tons<span id="exo3RangeOctaves"></span></span>
+            </span>
+          </div>
+
+          <p id="exo3Secret" class="secret-note"></p>
+
+          <div class="exo-controls">
+            <button class="start-btn" id="exo3Button">Commencer</button>
+            <button type="button" id="exo3Replay" class="replay-btn" title="Réécouter les deux notes">🔊</button>
+          </div>
+
+          <!-- Clavier généré par script.js : sa largeur suit le réglage d'écart max -->
+          <div class="piano-overflow">
+            <div class="piano piano-wide" id="exo3Piano"></div>
+          </div>
+
+          <p class="piano-hint">La touche de référence est surlignée. Clique celle du 2<sup>e</sup> son.</p>
+
+          <p id="exo3Feedback" class="feedback" aria-live="polite"></p>
+
+          <div class="exo-stats">
+            <p class="high-score">Meilleur temps : <span id="exo3HighScore">—</span></p>
+            <p class="streak">Série : <span id="exo3Streak">0</span> <span class="streak-best">(record : <span id="exo3BestStreak">0</span>)</span></p>
+            <ul id="exo3History" class="history-list"></ul>
+          </div>
         </article>
       </div>
     </section>
