@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Train - Exercices de piano</title>
+
+  <!-- Pico.css : petite lib CSS "classless" -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <header class="app-header">
+      <p class="eyebrow">Entraînement musical</p>
+      <h1>Music Train</h1>
+    </header>
+
+    <section id="exercise-selector" class="info-box">
+      <ul>
+        <li><a href="#" class="active">accord montant / descendant</a></li>
+        <li><a href="#">Onglet 2</a></li>
+        <li><a href="#">Onglet 3</a></li>
+      </ul>
+      <div class="panels">
+        <article class="active-panel" id="Arpege1">
+          <div class="exo-header">
+            <h3>Tape la réponse le plus vite possible</h3>
+            <label id="TimerArpege" class="timer">0.00s</label>
+          </div>
+
+          <p id="RandomNote">#</p>
+
+          <button class="start-btn">Commencer</button>
+
+          <div class="answer-row">
+            <input type="text" id="arpegeAnswerUp" placeholder="Montée" autocomplete="off">
+            <input type="text" id="arpegeAnswerDown" placeholder="Descente" autocomplete="off">
+          </div>
+
+          <p id="exo1Feedback" class="feedback" aria-live="polite"></p>
+        </article>
+        <article>
+          <h2>Rien</h2>
+
+          <p>
+            Cet onglet EST VIDE
+          </p>
+        </article>
+        <article>
+          <h2>Rien</h2>
+
+          <p>
+            C'est onglet esu AUSSI VIDE
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="exercise-display">
+      <!-- Le contenu de l'exercice sera injecté ici par script.js -->
+    </section>
+  </main>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

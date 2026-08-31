@@ -1,0 +1,263 @@
+/* Styles personnalisés en complément de Pico.css (thème sombre) */
+
+:root {
+  --mt-bg: #0f0f17;
+  --mt-surface: #171721;
+  --mt-surface-2: #1e1e2b;
+  --mt-border: #2c2c3d;
+  --mt-text: #f1f1f6;
+  --mt-text-muted: #9797ac;
+  --mt-accent: #8b6bff;
+  --mt-accent-2: #2dd4bf;
+  --mt-success: #34d399;
+  --mt-error: #f87171;
+  --mt-radius: 0.9rem;
+
+  --pico-background-color: var(--mt-bg);
+  --pico-color: var(--mt-text);
+  --pico-primary: var(--mt-accent);
+  --pico-primary-background: var(--mt-accent);
+  --pico-primary-hover-background: #7a58f5;
+  --pico-primary-inverse: #0f0f17;
+  --pico-muted-border-color: var(--mt-border);
+  --pico-muted-color: var(--mt-text-muted);
+}
+
+body {
+  background: radial-gradient(circle at top, #17172a 0%, var(--mt-bg) 55%);
+  min-height: 100vh;
+}
+
+/* ---------- En-tête ---------- */
+
+.app-header {
+  text-align: center;
+  padding: 2.5rem 0 1.5rem;
+}
+
+.app-header .eyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mt-accent-2);
+}
+
+.app-header h1 {
+  margin: 0.3rem 0 0.4rem;
+  font-size: 2.6rem;
+  font-weight: 800;
+  background: linear-gradient(120deg, var(--mt-accent), var(--mt-accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.app-header .subtitle {
+  margin: 0;
+  color: var(--mt-text-muted);
+}
+
+h2 {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--mt-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.note {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--mt-border);
+  font-weight: bold;
+  min-width: 2.5rem;
+}
+
+.note.active {
+  border-color: var(--mt-accent);
+  background: color-mix(in srgb, var(--mt-accent) 18%, transparent);
+  box-shadow: 0 0 0 1px var(--mt-accent);
+}
+
+/* ---------- Onglets ---------- */
+
+.info-box {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.info-box ul {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.35rem;
+  margin: 0 0 1.25rem;
+  background: var(--mt-surface);
+  border: 1px solid var(--mt-border);
+  border-radius: 999px;
+}
+
+.info-box li {
+  float: none;
+  list-style-type: none;
+  flex: 1;
+}
+
+.info-box li a {
+  display: block;
+  text-decoration: none;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  line-height: 1.2;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mt-text-muted);
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.info-box li a:focus,
+.info-box li a:hover {
+  background-color: var(--mt-surface-2);
+  color: var(--mt-text);
+}
+
+.info-box li a.active {
+  background: linear-gradient(120deg, var(--mt-accent), #6f4bff);
+  color: #ffffff;
+}
+
+/* ---------- Panneaux ---------- */
+
+.info-box .panels {
+  position: relative;
+}
+
+.info-box article {
+  display: none;
+  padding: 1.75rem;
+  color: var(--mt-text);
+  background: var(--mt-surface);
+  border: 1px solid var(--mt-border);
+  border-radius: var(--mt-radius);
+  box-shadow: 0 20px 45px -25px rgba(0, 0, 0, 0.6);
+}
+
+.info-box .active-panel {
+  display: block;
+}
+
+/* ---------- Exercice Arpège ---------- */
+
+article#Arpege1 .exo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+article#Arpege1 .exo-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.timer {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--mt-surface-2);
+  border: 1px solid var(--mt-border);
+  color: var(--mt-accent-2);
+}
+
+#RandomNote {
+  text-align: center;
+  margin: 1.5rem auto;
+  font-size: 4rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  background: linear-gradient(120deg, var(--mt-accent), var(--mt-accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.answer-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+#Arpege1 input {
+  flex: 1;
+  margin: 0;
+  text-transform: uppercase;
+  background: var(--mt-surface-2);
+  border-color: var(--mt-border);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#Arpege1 input:focus {
+  border-color: var(--mt-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mt-accent) 25%, transparent);
+}
+
+#Arpege1 input.correct {
+  border-color: var(--mt-success);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mt-success) 20%, transparent);
+}
+
+#Arpege1 input.incorrect {
+  border-color: var(--mt-error);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mt-error) 20%, transparent);
+}
+
+.info-box button {
+  display: block;
+  white-space: nowrap;
+  background: linear-gradient(120deg, var(--mt-accent), #6f4bff);
+  border: none;
+  font-weight: 600;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.start-btn {
+  margin: 0 auto 1.5rem;
+}
+
+.info-box button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px -10px var(--mt-accent);
+}
+
+.feedback {
+  min-height: 1.4rem;
+  margin: 1rem 0 0;
+  text-align: center;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.feedback.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.feedback.correct {
+  color: var(--mt-success);
+}
+
+.feedback.incorrect {
+  color: var(--mt-error);
+}
