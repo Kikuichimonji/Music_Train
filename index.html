@@ -38,6 +38,10 @@
             <input type="text" id="arpegeAnswerDown" placeholder="Descente" autocomplete="off" enterkeyhint="done">
           </div>
 
+          <p class="format-hint">
+            Ex. pour <strong>Do</strong> : <code>DO MI SOL</code> puis <code>DO LA FA</code>.
+          </p>
+
           <p id="exo1Feedback" class="feedback" aria-live="polite"></p>
 
           <div class="exo-stats">
@@ -83,7 +87,7 @@
             </div>
           </div>
 
-          <p class="piano-hint">Hors partie, clique les touches pour jouer librement.</p>
+          <p class="piano-hint">Clique les touches pour jouer librement.</p>
 
           <p id="exo2Feedback" class="feedback" aria-live="polite"></p>
 
@@ -121,6 +125,11 @@
             <button class="start-btn" id="exo3Button">Commencer</button>
             <button type="button" id="exo3Replay" class="replay-btn" title="Réécouter les deux notes">🔊</button>
           </div>
+
+          <!-- Visible en portrait sur petit écran uniquement (voir style.css).
+               On invite à tourner sans masquer le clavier : le verrouillage de
+               rotation est courant, et bloquer l'exercice serait pire. -->
+          <p class="rotate-hint"><span class="rotate-icon">📱</span> Tourne ton téléphone : le clavier est bien plus lisible en paysage.</p>
 
           <!-- Clavier généré par script.js : sa largeur suit le réglage d'écart max -->
           <div class="piano-overflow">
