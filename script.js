@@ -157,6 +157,14 @@ exo1Button.addEventListener("click", () => {
   exo1AnswerUp.focus()
 });
 
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  if (e.target === exo1AnswerUp || e.target === exo1AnswerDown) return;
+  if (!document.getElementById("Arpege1").classList.contains("active-panel")) return;
+
+  exo1Button.click();
+});
+
 exo1AnswerUp.addEventListener("keydown", (e) => {
   if (e.key !== "Enter" || exo1Interval === null) return;
 
@@ -191,4 +199,6 @@ exo1AnswerDown.addEventListener("keydown", (e) => {
     ? `Correct ! (Montée: ${formatElapsed(exo1SplitTime)} / Descente: ${formatElapsed(descentTime)})`
     : `Faux, la réponse était : ${answerWanted.ascending.join(" ")} / ${answerWanted.descending.join(" ")}`;
   exo1Feedback.className = `feedback show ${isCorrect ? "correct" : "incorrect"}`;
+
+  exo1AnswerDown.blur();
 });
