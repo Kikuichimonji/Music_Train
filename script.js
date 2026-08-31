@@ -457,6 +457,11 @@ exo1AnswerDown.addEventListener("keydown", (e) => {
   exo1AnswerDown.blur();
 });
 
+// Le mode difficile impose le son, puisque c'est le seul indice disponible
+function exo2SoundEnabled() {
+  return exo2SoundToggle.checked || exo2HardMode.checked;
+}
+
 exo2HardMode.addEventListener("change", () => {
   exo2SoundToggle.disabled = exo2HardMode.checked;
   if (exo2HardMode.checked) {
@@ -484,10 +489,9 @@ exo2Button.addEventListener("click", () => {
   exo2Feedback.className = "feedback";
   exo2Feedback.textContent = "";
 
-  const isHard = exo2HardMode.checked;
-  exo2Prompt.textContent = isHard ? "🔊" : exo2CurrentLabel;
+  exo2Prompt.textContent = exo2HardMode.checked ? "🔊" : exo2CurrentLabel;
 
-  if (isHard || exo2SoundToggle.checked) {
+  if (exo2SoundEnabled()) {
     playNote(exo2CurrentNote);
   }
 });
@@ -498,8 +502,10 @@ exo2Replay.addEventListener("click", () => {
 
 exo2Keys.forEach(key => {
   key.addEventListener("click", () => {
-    // Le clavier sonne toujours : hors partie, c'est un mode libre.
-    playNote(key.dataset.note);
+    // Hors partie, le clavier sert d'instrument libre — sous réserve du son activé
+    if (exo2SoundEnabled()) {
+      playNote(key.dataset.note);
+    }
 
     if (exo2Interval === null) return;
 
