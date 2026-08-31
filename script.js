@@ -91,11 +91,65 @@ let exo1AnswerUp = document.querySelector("#arpegeAnswerUp");
 let exo1AnswerDown = document.querySelector("#arpegeAnswerDown");
 let exo1RNote = document.querySelector("#Arpege1 #RandomNote");
 let exo1Feedback = document.querySelector("#exo1Feedback");
+let exo1HighScoreEl = document.querySelector("#exo1HighScore");
+let exo1HistoryEl = document.querySelector("#exo1History");
 let gamme = ["do","ré","mi","fa","sol","la","si"]
 let exo1previousNote = null;
 let exo1actualNote= null
 let exo1SplitTime = 0;
 let exo1AscendingCorrect = false;
+
+const EXO1_BEST_TIME_KEY = "musicTrain_exo1_bestTime";
+const EXO1_HISTORY_KEY = "musicTrain_exo1_history";
+const EXO1_HISTORY_LIMIT = 5;
+
+function loadExo1History() {
+  try {
+    return JSON.parse(localStorage.getItem(EXO1_HISTORY_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function renderExo1HighScore() {
+  const bestTime = localStorage.getItem(EXO1_BEST_TIME_KEY);
+  exo1HighScoreEl.textContent = bestTime ? formatElapsed(Number(bestTime)) : "—";
+}
+
+function renderExo1History() {
+  const history = loadExo1History();
+
+  exo1HistoryEl.innerHTML = history.map(entry => `
+    <li class="history-item ${entry.correct ? "correct" : "incorrect"}">
+      <span>${entry.time} · ${entry.note}</span>
+      <span class="history-time">${entry.correct ? formatElapsed(entry.totalMs) : "Faux"}</span>
+    </li>
+  `).join("");
+}
+
+function recordExo1Session(totalMs, isCorrect, note) {
+  const history = loadExo1History();
+  history.unshift({
+    totalMs,
+    correct: isCorrect,
+    note: note.charAt(0).toUpperCase() + note.slice(1),
+    time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+  });
+  localStorage.setItem(EXO1_HISTORY_KEY, JSON.stringify(history.slice(0, EXO1_HISTORY_LIMIT)));
+
+  if (isCorrect) {
+    const bestTime = Number(localStorage.getItem(EXO1_BEST_TIME_KEY));
+    if (!bestTime || totalMs < bestTime) {
+      localStorage.setItem(EXO1_BEST_TIME_KEY, String(totalMs));
+    }
+  }
+
+  renderExo1HighScore();
+  renderExo1History();
+}
+
+renderExo1HighScore();
+renderExo1History();
 
 for (let i = 0; i < tabs.length; i++) {
   let tab = tabs[i];
@@ -193,12 +247,15 @@ exo1AnswerDown.addEventListener("keydown", (e) => {
   exo1AnswerDown.className = descendingCorrect ? "correct" : "incorrect";
 
   const isCorrect = exo1AscendingCorrect && descendingCorrect;
-  const descentTime = performance.now() - exo1StartTime - exo1SplitTime;
+  const totalTime = performance.now() - exo1StartTime;
+  const descentTime = totalTime - exo1SplitTime;
 
   exo1Feedback.textContent = isCorrect
     ? `Correct ! (Montée: ${formatElapsed(exo1SplitTime)} / Descente: ${formatElapsed(descentTime)})`
     : `Faux, la réponse était : ${answerWanted.ascending.join(" ")} / ${answerWanted.descending.join(" ")}`;
   exo1Feedback.className = `feedback show ${isCorrect ? "correct" : "incorrect"}`;
+
+  recordExo1Session(totalTime, isCorrect, exo1RNote.innerHTML);
 
   exo1AnswerDown.blur();
 });

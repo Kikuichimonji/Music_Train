@@ -90,7 +90,7 @@ h2 {
   margin: 0 auto;
 }
 
-.info-box ul {
+.info-box > ul {
   display: flex;
   gap: 0.4rem;
   padding: 0.35rem;
@@ -259,5 +259,89 @@ article#Arpege1 .exo-header h3 {
 }
 
 .feedback.incorrect {
+  color: var(--mt-error);
+}
+
+.exo-stats {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--mt-border);
+}
+
+.high-score {
+  margin: 0 0 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--mt-text-muted);
+}
+
+.high-score::before {
+  content: "🏆 ";
+}
+
+.high-score span {
+  font-size: 1.2rem;
+  color: var(--mt-accent-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.6rem;
+  background: var(--mt-surface-2);
+  border: 1px solid var(--mt-border);
+  font-size: 0.85rem;
+  color: var(--mt-text-muted);
+}
+
+.history-item::before {
+  flex: 0 0 auto;
+  width: 1.4rem;
+  height: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.history-item.correct::before {
+  content: "✓";
+  color: var(--mt-success);
+  background: color-mix(in srgb, var(--mt-success) 18%, transparent);
+}
+
+.history-item.incorrect::before {
+  content: "✗";
+  color: var(--mt-error);
+  background: color-mix(in srgb, var(--mt-error) 18%, transparent);
+}
+
+.history-item .history-time {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--mt-text);
+  font-weight: 600;
+}
+
+.history-item.correct .history-time {
+  color: var(--mt-success);
+}
+
+.history-item.incorrect .history-time {
   color: var(--mt-error);
 }
