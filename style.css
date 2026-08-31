@@ -419,6 +419,10 @@ h2 {
 .range-row input[type="range"] {
   width: 10rem;
   margin: 0;
+  /* Le glissé horizontal doit rester au curseur : sans ça le navigateur peut
+     le récupérer pour faire défiler la page, et l'easter egg devient
+     intriggerable au doigt. */
+  touch-action: none;
 }
 
 /* nowrap : sans lui, « · 3 octaves » fait passer le texte sur deux lignes,
@@ -932,4 +936,23 @@ h2 {
     margin-left: calc(50% - 47vw);
     margin-right: calc(50% - 47vw);
   }
+}
+
+/* Le titre sert de déclencheur tactile : on neutralise la sélection de texte et
+   le zoom au double-tap, que des tapes répétées provoqueraient sinon. */
+.app-header h1 {
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  cursor: default;
+}
+
+.title-nudge {
+  animation: title-nudge 0.26s ease;
+}
+
+@keyframes title-nudge {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  30%      { transform: rotate(-2.5deg) scale(1.04); }
+  70%      { transform: rotate(2.5deg) scale(1.04); }
 }

@@ -890,6 +890,14 @@ function sliderAtMax() {
   return Number(exo3Range.value) >= Number(exo3Range.max);
 }
 
+// Distance à parcourir au-delà du rail. Sur un téléphone il n'y a pas 140 px
+// entre le bout du curseur et le bord de l'écran : le seuil suit la place réelle,
+// sans descendre si bas que le geste deviendrait accidentel.
+function forceDistance() {
+  const room = window.innerWidth - exo3Range.getBoundingClientRect().right - 16;
+  return Math.max(60, Math.min(FORCE_DISTANCE, room));
+}
+
 function canForce() {
   return absurdMode && !exo3Destroyed;
 }
@@ -904,7 +912,7 @@ window.addEventListener("pointermove", (e) => {
   // Une fois la butée atteinte, le curseur n'émet plus d'événement : c'est la
   // distance du pointeur au-delà du rail qui mesure l'acharnement.
   const overshoot = e.clientX - exo3Range.getBoundingClientRect().right;
-  setForce(sliderAtMax() && overshoot > 0 ? overshoot / FORCE_DISTANCE : 0);
+  setForce(sliderAtMax() && overshoot > 0 ? overshoot / forceDistance() : 0);
 
   if (exo3Force >= 1) startMeltdown();
 });
@@ -1236,3 +1244,40 @@ function placeCrater() {
   // Ancré là où était le clavier, pas sur l'écran : il doit défiler avec l'exercice
   pianoOverflow.appendChild(crater);
 }
+
+/* ---------- Déclencheur tactile : 7 tapes rapides sur le titre ---------- */
+
+// Le code Konami suppose un clavier physique. Les glissés seraient thématiques
+// mais entreraient en conflit avec le défilement de la page, et l'accéléromètre
+// réclame une autorisation explicite sur iOS. La tape sur le titre marche partout.
+const TITLE_TAPS_NEEDED = 7;
+const TITLE_TAP_WINDOW = 900; // ms au-delà desquelles la série repart de zéro
+
+const appTitle = document.querySelector(".app-header h1");
+let titleTaps = 0;
+let titleTapTimer = null;
+
+function resetTitleTaps() {
+  titleTaps = 0;
+  appTitle.classList.remove("title-nudge");
+}
+
+appTitle.addEventListener("click", () => {
+  titleTaps++;
+
+  clearTimeout(titleTapTimer);
+  titleTapTimer = setTimeout(resetTitleTaps, TITLE_TAP_WINDOW);
+
+  if (titleTaps >= TITLE_TAPS_NEEDED) {
+    resetTitleTaps();
+    toggleAbsurdMode();
+    return;
+  }
+
+  // Indice discret à mi-parcours : le titre frémit, sans rien dévoiler
+  if (titleTaps >= 4) {
+    appTitle.classList.remove("title-nudge");
+    void appTitle.offsetWidth; // force le redémarrage de l'animation
+    appTitle.classList.add("title-nudge");
+  }
+});
