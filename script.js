@@ -587,7 +587,7 @@ const MIDI_LOWEST_PIANO = 21;  // La0
 const MIDI_HIGHEST_USEFUL = 132; // ~16,7 kHz : au-delà, plus personne n'entend la cible
 
 // Doit correspondre au texte d'attente écrit dans index.html
-const PROMPT_IDLE = "Prêt ?";
+const PROMPT_IDLE = "——";
 
 // La référence doit pouvoir tomber sur n'importe quel degré d'une octave
 const EXO3_REF_SPAN = 13;
