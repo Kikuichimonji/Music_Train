@@ -586,6 +586,9 @@ const MIDI_A4 = 69;
 const MIDI_LOWEST_PIANO = 21;  // La0
 const MIDI_HIGHEST_USEFUL = 132; // ~16,7 kHz : au-delà, plus personne n'entend la cible
 
+// Doit correspondre au texte d'attente écrit dans index.html
+const PROMPT_IDLE = "Prêt ?";
+
 // La référence doit pouvoir tomber sur n'importe quel degré d'une octave
 const EXO3_REF_SPAN = 13;
 const EXO3_GAP_DELAY = 900; // ms entre les deux notes
@@ -680,7 +683,7 @@ function resetExo3(rebuild) {
 
   if (rebuild) buildExo3Keyboard();
 
-  exo3Prompt.textContent = "#";
+  exo3Prompt.textContent = PROMPT_IDLE;
   exo3Feedback.className = "feedback";
   exo3Feedback.textContent = "";
   exo3Timer.textContent = formatElapsed(0);
