@@ -456,18 +456,38 @@ document.addEventListener("keydown", (e) => {
   if (startBtn) startBtn.click();
 });
 
-exo1AnswerUp.addEventListener("keydown", (e) => {
-  if (e.key !== "Enter" || exo1Interval === null) return;
-
+// Relue à chaque appel plutôt que figée : on peut donc revenir corriger la
+// montée après coup, la dernière lecture faisant foi au moment de valider.
+function validateExo1Ascending() {
   const answerIndex = gamme.indexOf(exo1RNote.innerHTML);
   if (answerIndex === -1) return;
 
-  const answerWanted = calculateExo1Answer(answerIndex);
-  exo1AscendingCorrect = notesMatch(exo1AnswerUp.value, answerWanted.ascending);
+  const expected = calculateExo1Answer(answerIndex).ascending;
+  exo1AscendingCorrect = notesMatch(exo1AnswerUp.value, expected);
   exo1AnswerUp.className = exo1AscendingCorrect ? "correct" : "incorrect";
-  exo1SplitTime = performance.now() - exo1StartTime;
+}
 
+// 0 = pas encore relevé, valeur remise à zéro au début de chaque manche
+function markExo1Split() {
+  if (exo1SplitTime === 0) exo1SplitTime = performance.now() - exo1StartTime;
+}
+
+exo1AnswerUp.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" || exo1Interval === null) return;
+
+  markExo1Split();
+  validateExo1Ascending();
   exo1AnswerDown.focus();
+});
+
+// Quitter le champ à la souris ou au Tab doit valoir validation : sans ça, cliquer
+// directement dans le second champ laissait la montée jamais évaluée, donc comptée
+// fausse, et le temps de montée à zéro.
+exo1AnswerUp.addEventListener("blur", () => {
+  if (exo1Interval === null) return;
+
+  markExo1Split();
+  validateExo1Ascending();
 });
 
 exo1AnswerDown.addEventListener("keydown", (e) => {
@@ -478,6 +498,9 @@ exo1AnswerDown.addEventListener("keydown", (e) => {
 
   clearInterval(exo1Interval);
   exo1Interval = null;
+
+  // Relecture de la montée : elle a pu être corrigée depuis sa première évaluation
+  validateExo1Ascending();
 
   const answerWanted = calculateExo1Answer(answerIndex);
   const descendingCorrect = notesMatch(exo1AnswerDown.value, answerWanted.descending);
